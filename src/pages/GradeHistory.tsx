@@ -71,7 +71,7 @@ const GradeHistory: React.FC = () => {
       
       switch (sortBy) {
         case 'date':
-          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           break;
         case 'student':
           comparison = getStudentName(a.student_id).localeCompare(getStudentName(b.student_id));
@@ -145,7 +145,7 @@ const GradeHistory: React.FC = () => {
                   <option value="">Todos los estudiantes</option>
                   {students.map(student => (
                     <option key={student.id} value={student.id}>
-                      {student.name}
+                      {student.first_name} {student.last_name}
                     </option>
                   ))}
                 </select>
@@ -293,7 +293,7 @@ const GradeHistory: React.FC = () => {
                         <tr key={grade.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">
-                              {new Date(grade.created_at).toLocaleDateString()}
+                              {grade.date ? new Date(grade.date).toLocaleDateString() : 'Sin fecha'}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
