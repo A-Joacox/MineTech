@@ -4,6 +4,33 @@ import { studentsApi, subjectsApi, gradesApi } from '../services/api';
 import type { Student, Subject, Grade } from '../types';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
+import { Doughnut, Bar, Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface DashboardStats {
   totalStudents: number;
@@ -149,6 +176,183 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Gráfico Épico de Distribución de Calificaciones */}
+            <div className="bg-white p-6 rounded-lg shadow col-span-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Análisis de Calificaciones</h2>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Gráfico de Dona - Distribución por Rangos */}
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Distribución por Rangos</h3>
+                  <div className="relative h-64">
+                    <Doughnut
+                      data={{
+                        labels: ['Excelente (90-100%)', 'Bueno (80-89%)', 'Promedio (70-79%)', 'Regular (60-69%)', 'Reprobado (<60%)'],
+                        datasets: [{
+                          data: [
+                            stats?.gradeDistribution.excellent || 0,
+                            stats?.gradeDistribution.good || 0,
+                            stats?.gradeDistribution.average || 0,
+                            stats?.gradeDistribution.below || 0,
+                            stats?.gradeDistribution.failing || 0
+                          ],
+                          backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(107, 114, 128, 0.8)'
+                          ],
+                          borderColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(245, 158, 11)',
+                            'rgb(239, 68, 68)',
+                            'rgb(107, 114, 128)'
+                          ],
+                          borderWidth: 2,
+                          hoverOffset: 4
+                        }]
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: {
+                            position: 'bottom',
+                            labels: {
+                              padding: 20,
+                              usePointStyle: true,
+                              font: {
+                                size: 11
+                              }
+                            }
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Gráfico de Barras - Top Estudiantes */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Top Estudiantes</h3>
+                  <div className="relative h-64">
+                    <Bar
+                      data={{
+                        labels: stats?.topStudents.slice(0, 5).map(s => `${s.student.first_name} ${s.student.last_name}`) || [],
+                        datasets: [{
+                          label: 'Promedio (%)',
+                          data: stats?.topStudents.slice(0, 5).map(s => s.average) || [],
+                          backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                          borderColor: 'rgb(34, 197, 94)',
+                          borderWidth: 2,
+                          borderRadius: 8,
+                          borderSkipped: false,
+                        }]
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: {
+                            display: false
+                          }
+                        },
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                              color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                          },
+                          x: {
+                            grid: {
+                              display: false
+                            }
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Gráfico de Líneas - Top Materias */}
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">Top Materias</h3>
+                  <div className="relative h-64">
+                    <Line
+                      data={{
+                        labels: stats?.topSubjects.slice(0, 5).map(s => s.subject.name) || [],
+                        datasets: [{
+                          label: 'Promedio (%)',
+                          data: stats?.topSubjects.slice(0, 5).map(s => s.average) || [],
+                          borderColor: 'rgb(147, 51, 234)',
+                          backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                          borderWidth: 3,
+                          fill: true,
+                          tension: 0.4,
+                          pointBackgroundColor: 'rgb(147, 51, 234)',
+                          pointBorderColor: '#fff',
+                          pointBorderWidth: 2,
+                          pointRadius: 6,
+                          pointHoverRadius: 8
+                        }]
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: {
+                            display: false
+                          }
+                        },
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                              color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                          },
+                          x: {
+                            grid: {
+                              display: false
+                            }
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Estadísticas Detalladas */}
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="text-center p-4 bg-gradient-to-r from-green-100 to-green-200 rounded-lg">
+                  <div className="text-2xl font-bold text-green-800">{stats?.gradeDistribution.excellent || 0}</div>
+                  <div className="text-sm text-green-700">Excelente</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-800">{stats?.gradeDistribution.good || 0}</div>
+                  <div className="text-sm text-blue-700">Bueno</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg">
+                  <div className="text-2xl font-bold text-yellow-800">{stats?.gradeDistribution.average || 0}</div>
+                  <div className="text-sm text-yellow-700">Promedio</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-red-100 to-red-200 rounded-lg">
+                  <div className="text-2xl font-bold text-red-800">{stats?.gradeDistribution.below || 0}</div>
+                  <div className="text-sm text-red-700">Regular</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg">
+                  <div className="text-2xl font-bold text-gray-800">{stats?.gradeDistribution.failing || 0}</div>
+                  <div className="text-sm text-gray-700">Reprobado</div>
+                </div>
+              </div>
+            </div>
+
             {/* Top Estudiantes */}
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Top 5 Estudiantes</h2>
