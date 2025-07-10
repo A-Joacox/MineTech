@@ -149,7 +149,7 @@ const About: React.FC = () => {
 
           <div className="text-center mt-12">
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Profesor</h3>
-            <p className="text-lg text-gray-600">Kenny Neira (Ken para los amigos!!)</p>
+            <p className="text-lg text-gray-600">Kenny Neira</p>
           </div>
         </div>
       </section>
