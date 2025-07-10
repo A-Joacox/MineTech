@@ -1,90 +1,90 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import Button from './Button';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
+  const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login', { replace: true });
-  };
-
-  const navLinks = [
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/grades', label: 'Calificaciones' },
-    { path: '/grades/new', label: 'Nueva Calificación' },
-    { path: '/reports', label: 'Reportes' },
-    { path: '/history', label: 'Historial' },
+  const navItems = [
+    { name: 'Inicio', path: '/' },
+    { name: 'Acerca de', path: '/about' },
+    { name: 'Tecnologías', path: '/technologies' },
+    { name: 'Recursos', path: '/resources' },
+    { name: 'Comunidad', path: '/community' },
+    { name: 'Contacto', path: '/contact' },
   ];
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
   return (
-    <nav className="bg-white shadow-lg border-b border-gray-200">
+    <nav className="bg-gradient-to-r from-green-600 to-blue-600 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/dashboard" className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-gray-900">Sistema de Calificaciones</h1>
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
+                <span className="text-green-600 font-bold text-lg">M</span>
+              </div>
+              <span className="text-white font-bold text-xl">MineTech</span>
             </Link>
-            
-            <div className="hidden md:ml-6 md:flex md:space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
-                    isActive(link.path)
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
           </div>
 
-          <div className="flex items-center">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleLogout}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  isActive(item.path)
+                    ? 'bg-white bg-opacity-20 text-white'
+                    : 'text-white hover:bg-white hover:bg-opacity-10 hover:text-white'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-white hover:text-gray-200 focus:outline-none focus:text-gray-200"
             >
-              Cerrar Sesión
-            </Button>
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      <div className="md:hidden">
-        <div className="pt-2 pb-3 space-y-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200 ${
-                isActive(link.path)
-                  ? 'bg-blue-50 border-blue-500 text-blue-700'
-                  : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+      {/* Mobile Navigation */}
+      {isOpen && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-green-700">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                  isActive(item.path)
+                    ? 'bg-white bg-opacity-20 text-white'
+                    : 'text-white hover:bg-white hover:bg-opacity-10 hover:text-white'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 };

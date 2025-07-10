@@ -1,84 +1,30 @@
-import { AuthProvider } from './context/AuthContext';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import GradesList from './pages/GradesList';
-import GradeForm from './pages/GradeForm';
-import StudentGrades from './pages/StudentGrades';
-import SubjectGrades from './pages/SubjectGrades';
-import Reports from './pages/Reports';
-import GradeHistory from './pages/GradeHistory';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import About from './pages/About';
+import Technologies from './pages/Technologies';
+import Resources from './pages/Resources';
+import Community from './pages/Community';
+import Contact from './pages/Contact';
+import './App.css';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const apiKey = typeof window !== 'undefined' ? localStorage.getItem('apiKey') : null;
-  return apiKey ? <>{children}</> : <Navigate to="/login" replace />;
-}
-
-export default function App() {
+function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/grades"
-            element={
-              <ProtectedRoute>
-                <GradesList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/grades/new"
-            element={
-              <ProtectedRoute>
-                <GradeForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/grades/student/:id"
-            element={
-              <ProtectedRoute>
-                <StudentGrades />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/grades/subject/:id"
-            element={
-              <ProtectedRoute>
-                <SubjectGrades />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/history"
-            element={
-              <ProtectedRoute>
-                <GradeHistory />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/technologies" element={<Technologies />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </div>
+    </Router>
   );
 }
+
+export default App;
